@@ -1,0 +1,60 @@
+# Workflow 01: Ingest
+# Import and catalog raw source material
+
+purpose: >
+  Take existing draft material and import it into the repository structure.
+  Create an initial inventory and prepare material for classification.
+
+entry_conditions:
+  - "Raw draft files exist outside the repository or in a staging area"
+  - "book/00_foundation/book-brief.md exists (even if partially filled)"
+
+steps:
+  - id: 1
+    name: "Prepare foundation"
+    agent: orchestrator
+    skill: null
+    action: "Ensure book/00_foundation/ files exist. Prompt author to fill book-brief.md and thesis-and-promise.md at minimum."
+    input: null
+    output: "book/00_foundation/ files (at least partially filled)"
+    quality_gate: "book-brief.md has a working title and one-sentence summary"
+
+  - id: 2
+    name: "Import raw material"
+    agent: material-analyst
+    skill: ingest_draft
+    action: "Copy raw draft files into book/10_source_material/raw-draft/. Copy notes, anecdotes, research, references to their respective directories."
+    input: "Author's source files"
+    output: "Files in book/10_source_material/"
+    quality_gate: "All files imported; no files lost or corrupted"
+
+  - id: 3
+    name: "Generate inventory"
+    agent: material-analyst
+    skill: ingest_draft
+    action: "Create a content inventory with file names, word counts, and apparent content type."
+    input: "book/10_source_material/"
+    output: "Content inventory (stored in analysis or logged)"
+    quality_gate: "Every file in source_material/ is inventoried"
+
+  - id: 4
+    name: "Log ingest"
+    agent: orchestrator
+    skill: null
+    action: "Record ingest completion in .bookops/logs/workflow-runs.md"
+    input: "Inventory results"
+    output: "Log entry"
+    quality_gate: "Log entry includes date, file count, total word count"
+
+output_files:
+  - "book/10_source_material/raw-draft/*.md"
+  - "book/10_source_material/notes/*"
+  - ".bookops/logs/workflow-runs.md"
+
+stop_conditions:
+  - "All source material has been imported and inventoried"
+
+retry_rules:
+  - "If a file fails to import, log the error and continue with remaining files"
+  - "If all files fail, abort and report to author"
+  - "Max retries per file: 2"

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExtractCoreThesisOutput",
+  "type": "object",
+  "required": ["recommendedThesis", "candidates", "confidence"],
+  "properties": {
+    "recommendedThesis": { "type": "string" },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "thesis": { "type": "string" },
+          "specificity": { "type": "number", "minimum": 0, "maximum": 10 },
+          "defensibility": { "type": "number", "minimum": 0, "maximum": 10 },
+          "readerRelevance": { "type": "number", "minimum": 0, "maximum": 10 }
+        }
+      }
+    },
+    "evidenceMap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "thesis": { "type": "string" },
+          "supportingFragments": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "gaps": { "type": "array", "items": { "type": "string" } },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+  }
+}

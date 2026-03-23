@@ -1,0 +1,95 @@
+# Workflow 05: Revision
+# Multi-pass revision of all chapter drafts
+
+purpose: >
+  Run five sequential revision passes across all chapters: structural,
+  clarity, voice, consistency, and fact-check. Each pass must complete
+  before the next begins.
+
+entry_conditions:
+  - "Workflow 04 (Chapter Build) is complete"
+  - "All chapter drafts exist in book/40_chapters/"
+  - "All chapter contracts are fulfilled"
+  - "Pre-Revision quality gate passes"
+
+steps:
+  - id: 1
+    name: "Structural pass"
+    agent: developmental-editor
+    skill: null
+    action: "Review each chapter for logical flow, argument structure, pacing, and sequence. Check that each chapter fulfills its contract."
+    input: "All chapter drafts, chapter contracts"
+    output: "book/50_revision/structural-pass/ reports, updated drafts"
+    quality_gate: "Every chapter's structural issues are documented and resolved"
+
+  - id: 2
+    name: "Clarity pass"
+    agent: developmental-editor
+    skill: null
+    action: "Review for unclear explanations, jargon without definition, ambiguous pronouns, and confusing transitions."
+    input: "Chapter drafts (post-structural), reader confusion points"
+    output: "book/50_revision/clarity-pass/ reports, updated drafts"
+    quality_gate: "No HIGH severity confusion points remain"
+
+  - id: 3
+    name: "Voice pass"
+    agent: voice-editor
+    skill: null
+    action: "Check every chapter against the voice-style-guide. Ensure consistent tone, formality, sentence style, and vocabulary."
+    input: "Chapter drafts (post-clarity), voice-style-guide.md, glossary.md"
+    output: "book/50_revision/voice-pass/ reports, updated drafts"
+    quality_gate: "Voice adherence score meets threshold for all chapters"
+
+  - id: 4
+    name: "Consistency pass"
+    agent: voice-editor
+    skill: consistency_check
+    action: "Cross-chapter check for terminology, factual consistency, naming, and chronology."
+    input: "All chapter drafts (post-voice), glossary.md"
+    output: "book/50_revision/consistency-pass/ reports, updated drafts"
+    quality_gate: "No critical consistency issues remain"
+
+  - id: 5
+    name: "Fact-check pass"
+    agent: fact-checker
+    skill: null
+    action: "Verify all factual claims, statistics, quotes, and attributions."
+    input: "All chapter drafts (post-consistency), references/"
+    output: "book/50_revision/fact-check-pass/ reports, updated drafts"
+    quality_gate: "No ❌ Incorrect claims remain; all ❓ Uncertain claims resolved or flagged"
+
+  - id: 6
+    name: "Final reader simulation"
+    agent: reader-simulator
+    skill: run_reader_simulation
+    action: "Read the complete revised manuscript as the target reader. Assess overall experience."
+    input: "All chapter drafts (final), reader persona, thesis"
+    output: "Updated reader-confusion-points.md, experience score"
+    quality_gate: "Overall experience score ≥ 7/10; no critical confusion points"
+
+  - id: 7
+    name: "Log revision completion"
+    agent: orchestrator
+    skill: null
+    action: "Record all revision pass completions and results."
+    input: "All revision pass reports"
+    output: "Log entries in workflow-runs.md and decisions.md"
+    quality_gate: "All five passes logged with results"
+
+output_files:
+  - "book/50_revision/structural-pass/*.md"
+  - "book/50_revision/clarity-pass/*.md"
+  - "book/50_revision/voice-pass/*.md"
+  - "book/50_revision/consistency-pass/*.md"
+  - "book/50_revision/fact-check-pass/*.md"
+  - "book/40_chapters/ch{NN}/revision-notes.md (updated)"
+
+stop_conditions:
+  - "All five revision passes are complete"
+  - "No critical issues remain unresolved"
+  - "Pre-Release quality gate can be evaluated"
+
+retry_rules:
+  - "If structural pass reveals fundamental problems, may need to return to Workflow 03"
+  - "If fact-check finds incorrect claims, resolve before proceeding to release"
+  - "Each pass may iterate up to 2 times before escalating"

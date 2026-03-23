@@ -1,0 +1,95 @@
+# Quality Gates
+# Conditions that must be met before progressing between phases
+
+gates:
+
+  # Gate 1: Before diagnosis can begin
+  pre_diagnosis:
+    name: "Pre-Diagnosis Gate"
+    required_before: "02_diagnose"
+    conditions:
+      - "All raw draft files imported to book/10_source_material/raw-draft/"
+      - "book/00_foundation/book-brief.md is filled out"
+      - "book/00_foundation/reader-persona.md is filled out"
+      - "book/00_foundation/thesis-and-promise.md has a core thesis"
+    enforcement: block
+
+  # Gate 2: Before structure work can begin
+  pre_structure:
+    name: "Pre-Structure Gate"
+    required_before: "03_structure"
+    conditions:
+      - "book/20_analysis/redundancy-report.md is complete"
+      - "book/20_analysis/gap-analysis.md is complete"
+      - "book/20_analysis/theme-map.md is complete"
+      - "book/20_analysis/structural-diagnostics.md is complete"
+    enforcement: block
+
+  # Gate 3: Before chapter building can begin
+  pre_chapter_build:
+    name: "Pre-Chapter-Build Gate"
+    required_before: "04_chapter_build"
+    conditions:
+      - "book/30_structure/selected-outline.md is finalized"
+      - "book/30_structure/chapter-map.md is complete"
+      - "At least one candidate outline was evaluated"
+      - "Author has approved the selected outline"
+    enforcement: block
+
+  # Gate 4: Per-chapter contract requirement
+  chapter_contract:
+    name: "Chapter Contract Gate"
+    required_before: "drafting any chapter"
+    conditions:
+      - "A signed chapter contract exists in book/30_structure/chapter-contracts/"
+      - "Chapter brief exists in the chapter directory"
+      - "Source selection is documented"
+    enforcement: block
+
+  # Gate 5: Before revision can begin
+  pre_revision:
+    name: "Pre-Revision Gate"
+    required_before: "05_revision"
+    conditions:
+      - "All chapter drafts exist in book/40_chapters/"
+      - "All chapter contracts are fulfilled"
+      - "No unresolved structural issues from chapter build"
+    enforcement: block
+
+  # Gate 6: Revision pass ordering
+  revision_order:
+    name: "Revision Pass Order Gate"
+    conditions:
+      - "Structural pass must complete before clarity pass"
+      - "Clarity pass must complete before voice pass"
+      - "Voice pass must complete before consistency pass"
+      - "No final line editing before structural pass is complete"
+    enforcement: block
+
+  # Gate 7: Before release
+  pre_release:
+    name: "Pre-Release Gate"
+    required_before: "06_release"
+    conditions:
+      - "All five revision passes are complete"
+      - "Fact-check pass has no unresolved HIGH severity items"
+      - "Consistency check reports no critical issues"
+      - "Voice pass confirms adherence to voice-style-guide.md"
+      - "Every factual claim has an evidence marker or is flagged as opinion"
+    enforcement: block
+
+  # Gate 8: Source material protection
+  source_protection:
+    name: "Source Material Protection Gate"
+    conditions:
+      - "No generated file may overwrite anything in book/10_source_material/"
+      - "Source modifications require explicit author approval"
+    enforcement: hard_block
+
+  # Gate 9: Decision logging
+  decision_logging:
+    name: "Decision Logging Gate"
+    conditions:
+      - "Every major decision must be logged in .bookops/logs/decisions.md"
+      - "Major decisions include: outline selection, chapter contracts, structural changes"
+    enforcement: warn

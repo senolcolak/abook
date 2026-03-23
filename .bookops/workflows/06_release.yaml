@@ -1,0 +1,83 @@
+# Workflow 06: Release
+# Compile and export the final manuscript
+
+purpose: >
+  Compile all finalized chapter drafts into a single manuscript, generate
+  supporting release materials (synopsis, back cover), and export to
+  the designated output format.
+
+entry_conditions:
+  - "Workflow 05 (Revision) is complete"
+  - "All five revision passes are complete"
+  - "Pre-Release quality gate passes"
+  - "No unresolved HIGH severity fact-check items"
+
+steps:
+  - id: 1
+    name: "Final validation"
+    agent: orchestrator
+    skill: null
+    action: "Verify all quality gates pass. Confirm all chapters are finalized."
+    input: "All revision pass reports, quality-gates.yaml"
+    output: "Validation result (pass/fail)"
+    quality_gate: "All pre-release conditions met"
+
+  - id: 2
+    name: "Compile manuscript"
+    agent: orchestrator
+    skill: compile_manuscript
+    action: "Merge all chapter drafts into book/60_release/manuscript.md."
+    input: "book/40_chapters/*/draft.md, chapter order from chapter-map.md"
+    output: "book/60_release/manuscript.md"
+    quality_gate: "All chapters included; total word count verified"
+
+  - id: 3
+    name: "Write synopsis"
+    agent: developmental-editor
+    skill: null
+    action: "Write short, medium, and long synopses of the final manuscript."
+    input: "book/60_release/manuscript.md, book brief"
+    output: "book/60_release/synopsis.md"
+    quality_gate: "All three synopsis lengths are filled"
+
+  - id: 4
+    name: "Write back cover"
+    agent: voice-editor
+    skill: null
+    action: "Write back cover copy in the book's established voice."
+    input: "Synopsis, book brief, voice-style-guide.md"
+    output: "book/60_release/back-cover.md"
+    quality_gate: "Copy is within 150–200 words; voice is consistent"
+
+  - id: 5
+    name: "Export"
+    agent: orchestrator
+    skill: null
+    action: "Run export_manuscript.sh to produce formatted output."
+    input: "book/60_release/manuscript.md"
+    output: "book/60_release/export/*"
+    quality_gate: "Export file exists and is non-empty"
+
+  - id: 6
+    name: "Log release"
+    agent: orchestrator
+    skill: null
+    action: "Record final release details in all log files."
+    input: "Manuscript metadata, export results"
+    output: "Log entries in workflow-runs.md, decisions.md, change-log.md"
+    quality_gate: "Final word count, chapter count, and export format logged"
+
+output_files:
+  - "book/60_release/manuscript.md"
+  - "book/60_release/synopsis.md"
+  - "book/60_release/back-cover.md"
+  - "book/60_release/export/*"
+
+stop_conditions:
+  - "Manuscript compiled and exported"
+  - "All release materials complete"
+
+retry_rules:
+  - "If compilation fails, check for missing chapter drafts"
+  - "If export fails, retry with alternative format"
+  - "Max retries: 2"

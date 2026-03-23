@@ -1,0 +1,83 @@
+# Workflow 03: Structure
+# Build and select the book's structural outline
+
+purpose: >
+  Generate candidate book outlines, evaluate them against the thesis and
+  reader persona, select the strongest one, and create the chapter map
+  and transitions map.
+
+entry_conditions:
+  - "Workflow 02 (Diagnose) is complete"
+  - "All five analysis reports exist in book/20_analysis/"
+  - "Pre-Structure quality gate passes"
+
+steps:
+  - id: 1
+    name: "Generate candidate outlines"
+    agent: book-architect
+    skill: build_alt_outlines
+    action: "Create at least 3 structurally distinct candidate outlines."
+    input: "Material catalog, thesis, reader persona, constraints"
+    output: "book/30_structure/candidate-outlines/*.md"
+    quality_gate: "At least 3 outlines exist; each is structurally distinct"
+
+  - id: 2
+    name: "Evaluate outlines"
+    agent: book-architect
+    skill: null
+    action: "Score each outline for thesis alignment, reader journey, feasibility, and balance."
+    input: "Candidate outlines, analysis reports"
+    output: "Comparison matrix (appended to each candidate or standalone)"
+    quality_gate: "All outlines scored; trade-offs documented"
+
+  - id: 3
+    name: "Select outline"
+    agent: orchestrator
+    skill: null
+    action: "Present recommendation to author. Author selects or requests revisions."
+    input: "Evaluated outlines, recommendation"
+    output: "book/30_structure/selected-outline.md"
+    quality_gate: "Author has explicitly approved the selected outline"
+
+  - id: 4
+    name: "Build chapter map"
+    agent: book-architect
+    skill: null
+    action: "Create detailed chapter map from the selected outline."
+    input: "Selected outline"
+    output: "book/30_structure/chapter-map.md"
+    quality_gate: "Every chapter has purpose, key takeaway, and dependencies listed"
+
+  - id: 5
+    name: "Map transitions"
+    agent: book-architect
+    skill: map_transitions
+    action: "Design transitions between each consecutive chapter pair."
+    input: "Chapter map, selected outline"
+    output: "book/30_structure/transitions-map.md"
+    quality_gate: "All chapter pairs have transition designs; weak ones flagged"
+
+  - id: 6
+    name: "Log structure decisions"
+    agent: orchestrator
+    skill: null
+    action: "Record outline selection rationale and chapter map in decision log."
+    input: "Selected outline, chapter map"
+    output: "Log entries in decisions.md"
+    quality_gate: "Selection rationale is documented"
+
+output_files:
+  - "book/30_structure/candidate-outlines/*.md"
+  - "book/30_structure/selected-outline.md"
+  - "book/30_structure/chapter-map.md"
+  - "book/30_structure/transitions-map.md"
+
+stop_conditions:
+  - "Outline is selected and approved by author"
+  - "Chapter map and transitions map are complete"
+  - "Pre-Chapter-Build quality gate can be evaluated"
+
+retry_rules:
+  - "If author rejects all outlines, generate new candidates with adjusted constraints"
+  - "If transitions cannot be designed, chapter sequence may need reordering"
+  - "Max retries per step: 2"

@@ -1,0 +1,48 @@
+# Naming Conventions
+# Standards for file and directory naming across the repository
+
+directories:
+  # Use numbered prefixes for ordered directories
+  ordered_prefix_format: "NN_name"  # e.g., 00_foundation, 10_source_material
+  # Chapter directories use ch + zero-padded number
+  chapter_format: "chNN"  # e.g., ch01, ch02, ch12
+  # Skill directories use snake_case
+  skill_format: "snake_case"  # e.g., ingest_draft, detect_repetition
+  # Revision pass directories use kebab-case
+  revision_pass_format: "kebab-case"  # e.g., structural-pass, voice-pass
+
+files:
+  # Use kebab-case for all Markdown files
+  markdown_format: "kebab-case.md"  # e.g., book-brief.md, gap-analysis.md
+  # Templates use .template.md suffix
+  template_format: "name.template.md"  # e.g., chapter-contract.template.md
+  # Schema files use .schema.json suffix
+  schema_format: "name.schema.json"  # e.g., input.schema.json
+  # Workflow files use numbered prefix + snake_case
+  workflow_format: "NN_name.yaml"  # e.g., 01_ingest.yaml
+  # Config files use kebab-case
+  config_format: "kebab-case.yaml"  # e.g., workflow-rules.yaml
+
+content:
+  # Headings in Markdown files use Title Case
+  heading_style: "Title Case"
+  # YAML keys use snake_case
+  yaml_key_style: "snake_case"
+  # JSON keys use camelCase
+  json_key_style: "camelCase"
+
+agents:
+  # Agent files use kebab-case, matching the agent role name
+  file_format: "role-name.md"  # e.g., book-architect.md, voice-editor.md
+
+examples:
+  valid:
+    - "book/00_foundation/book-brief.md"
+    - "book/40_chapters/ch01/draft.md"
+    - ".bookops/skills/ingest_draft/SKILL.md"
+    - ".bookops/workflows/01_ingest.yaml"
+    - ".bookops/agents/book-architect.md"
+  invalid:
+    - "book/00_foundation/BookBrief.md"       # wrong: PascalCase
+    - "book/40_chapters/chapter1/draft.md"    # wrong: no zero-padding
+    - ".bookops/skills/IngestDraft/SKILL.md"  # wrong: PascalCase

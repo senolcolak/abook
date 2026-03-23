@@ -1,0 +1,78 @@
+# Workflow 04: Chapter Build
+# Create chapter contracts and draft chapters
+
+purpose: >
+  For each chapter in the chapter map, create a chapter contract, build a
+  chapter brief, allocate source material, and produce the draft.
+
+entry_conditions:
+  - "Workflow 03 (Structure) is complete"
+  - "book/30_structure/selected-outline.md is finalized"
+  - "book/30_structure/chapter-map.md is complete"
+  - "Author has approved the selected outline"
+  - "Pre-Chapter-Build quality gate passes"
+
+steps:
+  - id: 1
+    name: "Create chapter contract"
+    agent: chapter-designer
+    skill: create_chapter_contract
+    action: "For each chapter, create a detailed contract using the template."
+    input: "Chapter map, material catalog, transitions map, template"
+    output: "book/30_structure/chapter-contracts/ch{NN}-contract.md"
+    quality_gate: "Contract has purpose, include/exclude lists, done criteria"
+    repeat: "For each chapter in the chapter map"
+
+  - id: 2
+    name: "Build chapter brief"
+    agent: chapter-designer
+    skill: null
+    action: "Create a chapter brief with content plan, opening/closing strategies."
+    input: "Chapter contract, classified material"
+    output: "book/40_chapters/ch{NN}/chapter-brief.md"
+    quality_gate: "Brief aligns with contract; source material identified"
+    repeat: "For each chapter"
+
+  - id: 3
+    name: "Allocate source material"
+    agent: chapter-designer
+    skill: null
+    action: "Map which source fragments feed into each chapter."
+    input: "Material catalog, chapter contracts"
+    output: "book/40_chapters/ch{NN}/source-selection.md"
+    quality_gate: "No unintentional duplication of material across chapters"
+    repeat: "For each chapter"
+
+  - id: 4
+    name: "Draft chapter"
+    agent: developmental-editor
+    skill: null
+    action: "Author writes the chapter draft (or AI assists) following the contract and brief."
+    input: "Chapter brief, source selection, chapter contract"
+    output: "book/40_chapters/ch{NN}/draft.md"
+    quality_gate: "Draft exists; addresses the chapter contract's purpose"
+    repeat: "For each chapter"
+
+  - id: 5
+    name: "Log chapter completion"
+    agent: orchestrator
+    skill: null
+    action: "Record chapter draft completion in workflow-runs.md."
+    input: "Chapter draft status"
+    output: "Log entry"
+    quality_gate: "Word count and contract adherence noted"
+
+output_files:
+  - "book/30_structure/chapter-contracts/*.md"
+  - "book/40_chapters/ch{NN}/chapter-brief.md"
+  - "book/40_chapters/ch{NN}/source-selection.md"
+  - "book/40_chapters/ch{NN}/draft.md"
+
+stop_conditions:
+  - "All chapters have contracts, briefs, source selections, and drafts"
+  - "Pre-Revision quality gate can be evaluated"
+
+retry_rules:
+  - "If contract reveals structural problem, escalate to Book Architect"
+  - "If source material is insufficient for a chapter, flag and request author input"
+  - "Chapters with no dependencies can be drafted in parallel"

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExtractCoreThesisInput",
+  "type": "object",
+  "required": ["sourceFiles"],
+  "properties": {
+    "sourceFiles": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "existingThesis": {
+      "type": "string",
+      "description": "Optional author-provided thesis draft for comparison"
+    },
+    "readerPersona": {
+      "type": "string",
+      "description": "Path to reader persona file"
+    }
+  }
+}

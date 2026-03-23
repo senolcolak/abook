@@ -1,0 +1,51 @@
+# Workflow Rules
+# Global policies governing how workflows execute
+
+general:
+  # Every workflow step must log its start and end
+  require_logging: true
+  # Log file for workflow execution
+  log_file: "logs/workflow-runs.md"
+  # Decision log for significant choices
+  decision_log: "logs/decisions.md"
+
+execution:
+  # Workflows must run in numerical order (01 → 06)
+  enforce_order: true
+  # A workflow cannot start if the previous one has unresolved blockers
+  block_on_open_issues: true
+  # Maximum retries for a failed step before escalating
+  max_retries: 2
+
+source_material:
+  # Source material directory is read-only after ingest
+  read_only_after_ingest: true
+  protected_paths:
+    - "book/10_source_material/"
+  # Generated content must never overwrite source files
+  no_overwrite_sources: true
+
+chapter_rules:
+  # No chapter draft may begin without an approved chapter contract
+  require_contract_before_draft: true
+  # Chapter contracts live here
+  contract_path: "book/30_structure/chapter-contracts/"
+  # Chapter directories follow this pattern
+  chapter_dir_pattern: "book/40_chapters/ch{NN}/"
+
+revision_rules:
+  # Revision passes must run in this order
+  pass_order:
+    - structural
+    - clarity
+    - voice
+    - consistency
+    - fact-check
+  # No line editing before structural pass is complete
+  structural_first: true
+
+output:
+  # All generated analysis goes here, never in source material
+  analysis_output_dir: "book/20_analysis/"
+  # Final manuscript output
+  manuscript_output: "book/60_release/manuscript.md"

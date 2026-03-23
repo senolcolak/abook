@@ -1,0 +1,27 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Export artifacts (regenerated)
+book/60_release/export/*
+!book/60_release/export/.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# Node / tool deps (if any scripts use them)
+node_modules/
+
+# Log rotation backups
+.bookops/logs/*.bak

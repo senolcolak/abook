@@ -1,0 +1,93 @@
+# Workflow 02: Diagnose
+# Analyze source material for themes, redundancy, gaps, and structural issues
+
+purpose: >
+  Run diagnostic analysis on the imported source material to understand
+  what exists, what's missing, what's repeated, and how it's organized.
+
+entry_conditions:
+  - "Workflow 01 (Ingest) is complete"
+  - "book/10_source_material/ contains imported files"
+  - "book/00_foundation/book-brief.md is filled"
+  - "book/00_foundation/thesis-and-promise.md has a core thesis"
+  - "Pre-Diagnosis quality gate passes"
+
+steps:
+  - id: 1
+    name: "Extract core thesis"
+    agent: material-analyst
+    skill: extract_core_thesis
+    action: "Analyze source material to identify or validate the core thesis."
+    input: "book/10_source_material/, book/00_foundation/thesis-and-promise.md"
+    output: "Validated thesis (update thesis-and-promise.md if needed)"
+    quality_gate: "Thesis is specific, defensible, and supported by material"
+
+  - id: 2
+    name: "Classify material"
+    agent: material-analyst
+    skill: classify_material
+    action: "Tag every fragment of source material by theme, type, and quality."
+    input: "book/10_source_material/"
+    output: "Material catalog, theme-map.md"
+    quality_gate: "Every fragment classified; no untagged material"
+
+  - id: 3
+    name: "Detect repetition"
+    agent: material-analyst
+    skill: detect_repetition
+    action: "Find repeated ideas, arguments, and phrases across all source material."
+    input: "book/10_source_material/"
+    output: "book/20_analysis/redundancy-report.md"
+    quality_gate: "All findings include locations and recommendations"
+
+  - id: 4
+    name: "Identify gaps"
+    agent: material-analyst
+    skill: null
+    action: "Compare classified material against thesis and reader persona to find missing content."
+    input: "Material catalog, thesis, reader persona"
+    output: "book/20_analysis/gap-analysis.md"
+    quality_gate: "Gaps are prioritized and actionable"
+
+  - id: 5
+    name: "Run structural diagnostics"
+    agent: book-architect
+    skill: null
+    action: "Evaluate the organizational patterns in the source material."
+    input: "Material catalog, theme map"
+    output: "book/20_analysis/structural-diagnostics.md"
+    quality_gate: "Flow, dependencies, and balance are assessed"
+
+  - id: 6
+    name: "Run initial reader simulation"
+    agent: reader-simulator
+    skill: run_reader_simulation
+    action: "Read source material as the target reader to identify confusion points."
+    input: "book/10_source_material/raw-draft/, reader persona"
+    output: "book/20_analysis/reader-confusion-points.md"
+    quality_gate: "Confusion points are anchored to specific locations"
+
+  - id: 7
+    name: "Log diagnosis"
+    agent: orchestrator
+    skill: null
+    action: "Record diagnosis completion and key findings."
+    input: "All analysis reports"
+    output: "Log entries in workflow-runs.md and decisions.md"
+    quality_gate: "Summary of findings logged"
+
+output_files:
+  - "book/20_analysis/redundancy-report.md"
+  - "book/20_analysis/gap-analysis.md"
+  - "book/20_analysis/theme-map.md"
+  - "book/20_analysis/reader-confusion-points.md"
+  - "book/20_analysis/structural-diagnostics.md"
+
+stop_conditions:
+  - "All five analysis reports are complete"
+  - "Pre-Structure quality gate can be evaluated"
+
+retry_rules:
+  - "If classification fails for a file, re-attempt with smaller fragments"
+  - "If thesis extraction produces low confidence, present candidates to author"
+  - "Max retries per step: 2"
